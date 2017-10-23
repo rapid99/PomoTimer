@@ -7,9 +7,13 @@ class App extends Component {
     super();
     this.state = { time: {}, seconds: 1500 };
     this.timer = 0;
+    this.bar = document.getElementById("bar");
+    this.label = document.getElementById("label");
     this.startTimer = this.startTimer.bind(this);
     this.startBreakTimer = this.startBreakTimer.bind(this);
     this.countDown = this.countDown.bind(this);
+    this.pauseTimer = this.pauseTimer.bind(this);
+    this.moveBar = this.moveBar.bind(this);
   }
 
   secondsToTime(secs){
@@ -48,6 +52,13 @@ class App extends Component {
     }
   }
 
+  pauseTimer(){
+    if (this.props.paused == "false"){
+      clearInterval(this.timer);
+    } else {
+      this.startTimer();
+    }
+  }
 
   countDown() {
     // Remove one second, set state so a re-render happens.
@@ -63,6 +74,22 @@ class App extends Component {
     }
   }
 
+  moveBar(){
+    var bar = this.bar;
+    var width = 1;
+    var interval = setInterval(fill, 30);
+
+    function fill(){
+      if (width >= 100){
+        clearInterval(interval);
+      } else {
+          width++;
+          bar.style.width = width + '%';
+          this.label = width + '%';
+      }
+    };
+  }
+
   render() {
     return (
       <div className="App">
@@ -76,12 +103,17 @@ class App extends Component {
         </div>
         <div className="mainBtnContainer">
           <button type="button" className="mainBtn" id="startBtn" onClick={this.startTimer}>Start</button>
-          <button type="button" id="stopBtn" className="subBtn">Stop</button>
+          <button type="button" id="stopBtn" className="subBtn" onClick={this.pauseTimer}>Reset</button>
           <button type="button" id="breakBtn" className="mainBtn" onClick={this.startBreakTimer}>Break</button>
         </div>
         <div className="subBtnContainer">
         </div>
-        <span id="timer">{this.state.time.m} : {this.state.time.s}</span>
+        <span id="timer" paused="false" >{this.state.time.m} : {this.state.time.s}</span>
+        <div className="frame">
+          <div className="bar">
+            <div className="label">0%</div><br />
+          </div>
+        </div>
       </div>
     );
   }
